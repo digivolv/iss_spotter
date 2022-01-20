@@ -11,17 +11,32 @@ const request = require("request");
 const fetchMyIP = (callback) => {
   // use request to fetch IP address from JSON API
   request("https://api.ipify.org?format=json", (error, response, body) => {
-    const data = JSON.parse(body);
     if (error) {
       callback(error, null);
     }
     if (response.statusCode !== 200) {
       const msg = `Status Code ${response.statusCode} when fetching IP. Response: ${body}`;
       callback(Error(msg), null);
+      return;
     } else {
+      const data = JSON.parse(body);
       callback(null, data.ip);
     }
   });
 };
 
-module.exports = { fetchMyIP };
+const fetchCoordsByIP = (ip, callback) => {
+  request(`https://freegeoip.app/json/${ip}`, (error, response, body) => {
+    if (error) {
+      callback(error, null);
+    }
+    if (response.statusCode !== 200) {
+      const msg = `Status Code ${response.statusCode} when fetching IP. Response: ${body}`;
+      callback(Error(msg), null);
+    }
+    const data = JSON.parse(body);
+    console.log(data.latitude, data.longitude, null);
+  });
+};
+
+module.exports = { fetchMyIP, fetchCoordsByIP };
